@@ -26,7 +26,7 @@ APK 方法证据来自 Androguard 4.1.3 的真实 DEX 指令，不运行 APK，�
 | 模式确认 | DIM 放行和窗口结果分开 | 内容命令接受 + 首帧 + GD ready | 分阶段证据，窗口建立不报总成功 |
 | 原导航争用 | 显式服务状态修改、已有恢复记录；服务存在时缺省开 | GD 内部模式进入/恢复实现未知 | 原厂协调优先；暂停默认关且显式选择 |
 | 方控 | 媒体中心/Input/KeyEvent/日志，已有去重 | GD 回调/映射/消费状态与去重 | 按操作选主通路，分别验证手机和原播放器 |
-| 音频 | 分类/用途可配置；music duck gain 0.3 | 角色/用途/设备可配置；duck gain 0.2 | 系统独立音量单独验收，压低音乐另计 |
+| 音频 | 分类/用途可配置，默认media1/nav12；duck gain0.3 | 用途/非零legacy AudioTrack/设备，duck gain0.2 | 已确认本车MUSIC3/NAVI12，明确路由；播放/调节单独验收 |
 | 维护代价 | 全部定制构建来源未核实 | 公开主程序 + 另签名闭源 GD | 原版核心 + 小范围源码适配，不暗中依赖外部桥 |
 
 ## 1. carlito：外部桥的准确边界
@@ -77,15 +77,17 @@ carlito [地图计划/输出][map]使用第二路视频并分离命令接受、�
 
 ## 4. 音频：用途、增益与系统音量是三件事
 
-carlito [音频输出][renderer]配置角色、用途和部分 legacy stream；[厂商配置读取][factory]取得原厂用途值，并不授予系统权限。
-[焦点协调][focus]在导航活跃时将 MEDIA AudioTrack 增益降至 0.2，不是新增 E03 volume group。
+**二次核查更正：本车原厂独立音量能力已有正证据，carlito也有直接扩展stream构造路径。** 详情见[独立音量核查](E03-ECARX-AUDIO.md)。
 
-酷安 `AudioChannelMapper` 用 audioType + payloadType 分类；`AudioRenderer.audioAttributes/createTrack` 为媒体和导航分别构建用途并创建轨道。
-`AndroidMediaSink.applyMusicDucking` / `AudioRenderer.setDucked` 的实际音乐增益是 0.3/1.0。
-已提取的音频核心尚未证明可由用户分别调媒体/导航增益，也没有 E03 原车独立音量组的运行证据。
+- 本车历史音频状态/曲线及系统ECARX别名表：MUSIC3→3、NAVI12→12，两套实际音量状态不同；不是需要App新建volume group。
+- 酷安完整持久化→枚举→renderer→AudioTrack链已补齐：默认媒体usage1/content2，导航usage12/content1；自定义数字也是usage，不是legacy stream。
+- carlito [非零数值建轨][renderer-legacy]直接传旧 AudioTrack(streamType, …)，不止标准范围 setLegacyStreamType。媒体3、导航12是本车明确stream选择。
+- [厂商用途读取][factory]和legacy输出位于公开主应用，不经GD；设备选择可覆盖numeric override，实际路由不能仅靠已保存数值断言。
+- [焦点协调][focus]gain0.2与酷安gain0.3/1.0均为临时duck，和原车独立音量分别验收。
+- 上游已有应用导航音量键setStreamVolume；v0.2.14没有这项键处理。[BYD导航14实测][wheel-volume]不移植成本车结论，本车14是BEEP。
 
-上游 [导航方控音量说明][wheel-volume]描述已测 BYD 车型的私有 stream 14，并明确不是其他车机兼容承诺。E03 不直接继承该数值或验证结论。
-先检查真实路由和音量状态，再决定音量键职责；不通过监听所有媒体音量变化来猜用户意图并强制回改。
+尚未执行两App在本车活跃轨道、同时播放调节及实体键验收；usage12→native12也不凭数字相同就认定。确定路由与未测效果分别记录，不继续把原厂能力写成未知。
+不通过监听所有媒体音量变化猜用户意图并强制回改。
 
 ## 5. 复用范围与未完成验证
 
@@ -111,6 +113,7 @@ carlito [音频输出][renderer]配置角色、用途和部分 legacy stream；[
 [projection]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/vehicle-probe/src/main/java/com/shilapi/xcertplay/vehicleprobe/VehicleProjectionClient.kt#L36-L90
 [gesture]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/common/src/main/java/com/shilapi/xcertplay/CarPlayHostActivity.kt#L4602-L4613
 [renderer]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/shared/src/main/java/com/shilapi/xcertplay/media/AndroidMediaSink.kt#L1148-L1280
+[renderer-legacy]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/shared/src/main/java/com/shilapi/xcertplay/media/AndroidMediaSink.kt#L1068-L1110
 [factory]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/shared/src/main/java/com/shilapi/xcertplay/vehicle/GeelyFactoryCarPlay.kt#L38-L98
 [focus]: https://github.com/carlito12345/DiPlay/blob/f11d9c94bdc0574d132bd4afe65e31778c51144b/shared/src/main/java/com/shilapi/xcertplay/media/AudioFocusCoordinator.kt#L127-L196
 [wheel-volume]: https://github.com/shihabal3amri/DiPlay/blob/6ebb58218f90b0c0853b78013cb8431765ca77bb/docs/NAVIGATION_WHEEL_VOLUME.md
