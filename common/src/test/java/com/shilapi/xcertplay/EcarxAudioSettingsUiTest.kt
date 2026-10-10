@@ -1,6 +1,7 @@
 package com.shilapi.xcertplay
 
 import android.content.Intent
+import android.os.Looper
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,8 @@ class EcarxAudioSettingsUiTest {
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
         shadowOf(dialog).clickOnItem(EcarxAudioMode.E03.ordinal)
         dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).performClick()
+        shadowOf(Looper.getMainLooper()).idle()
+        assertFalse(dialog.isShowing)
         assertEquals(EcarxAudioMode.UPSTREAM, EcarxAudioPreferences.open(context).load())
         assertNull(shadowOf(screen).nextStartedActivity)
     }
@@ -62,6 +65,8 @@ class EcarxAudioSettingsUiTest {
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
         shadowOf(dialog).clickOnItem(EcarxAudioMode.E03.ordinal)
         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).performClick()
+        // AlertDialog dispatches the save listener through a queued main-thread message.
+        shadowOf(Looper.getMainLooper()).idle()
         assertEquals(EcarxAudioMode.E03, EcarxAudioPreferences.open(context).load())
         assertTrue(PendingReconnect.isPending(controller))
         assertSame(controller, CarPlayBackgroundSession.snapshot()?.controller)
