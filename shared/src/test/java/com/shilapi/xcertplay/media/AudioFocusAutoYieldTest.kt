@@ -112,7 +112,8 @@ class AudioFocusAutoYieldTest {
 
     @Test fun droppedQueuedFocusCallbackReportsWhyWithoutChangingNewMedia() {
         val diagnostics = mutableListOf<String>()
-        val coordinator = AudioFocusCoordinator(context, true, true, diagnostics::add).also(coordinators::add)
+        val coordinator = AudioFocusCoordinator(context,
+            AudioFocusOptions(enabled = true, report = diagnostics::add)).also(coordinators::add)
         val first = track(); val second = track()
         coordinator.acquire(first, AudioChannel.MEDIA, attributes)
         val oldListener = coordinator.listener
@@ -158,8 +159,38 @@ class AudioFocusAutoYieldTest {
         assertTrue(volumes(late).isEmpty())
     }
 
-    private fun coordinator(enabled: Boolean = true, autoYield: Boolean = true) =
-        AudioFocusCoordinator(context, enabled, autoYield).also(coordinators::add)
+    /** E03 OEM ducking must not receive a second application-level attenuation. */
+    @Test fun systemDuckingLeavesExistingAndNewMusicTracksAtUserVolume() {
+        val coordinator = coordinator(duckingOwner = AudioDuckingOwner.SYSTEM)
+        val first = track(); val second = track()
+        coordinator.acquire(first, AudioChannel.MEDIA, attributes)
+        manager.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
+        val userVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        coordinator.onExternalFocusChange(AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK)
+        coordinator.acquire(second, AudioChannel.MEDIA, attributes)
+        coordinator.onExternalFocusChange(AudioManager.AUDIOFOCUS_GAIN)
+        assertTrue(volumes(first).isEmpty())
+        assertTrue(volumes(second).isEmpty())
+        assertEquals(userVolume, manager.getStreamVolume(AudioManager.STREAM_MUSIC))
+    }
+
+    /** System ducking does not disable the user's separate transient-loss/call yielding choice. */
+    @Test fun systemDuckingStillMutesForTransientLossAndRestoresOnlyApplicationGain() {
+        val coordinator = coordinator(duckingOwner = AudioDuckingOwner.SYSTEM)
+        val media = track(); val phone = track()
+        coordinator.acquire(media, AudioChannel.MEDIA, attributes)
+        coordinator.acquire(phone, AudioChannel.PHONE, attributes)
+        coordinator.onExternalFocusChange(AudioManager.AUDIOFOCUS_LOSS_TRANSIENT)
+        coordinator.onExternalFocusChange(AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK)
+        assertEquals(listOf(0f), volumes(media))
+        coordinator.onExternalFocusChange(AudioManager.AUDIOFOCUS_GAIN)
+        assertEquals(listOf(0f, 1f), volumes(media))
+        assertTrue(volumes(phone).isEmpty())
+    }
+
+    private fun coordinator(enabled: Boolean = true, autoYield: Boolean = true,
+        duckingOwner: AudioDuckingOwner = AudioDuckingOwner.APPLICATION) =
+        AudioFocusCoordinator(context, AudioFocusOptions(enabled, autoYield, duckingOwner)).also(coordinators::add)
     private fun track(): AudioTrack = AudioTrack.Builder().setAudioAttributes(attributes)
         .setAudioFormat(AudioFormat.Builder().setSampleRate(44100).setEncoding(AudioFormat.ENCODING_PCM_16BIT)
             .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO).build())

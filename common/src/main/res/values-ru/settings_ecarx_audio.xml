@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">Раздельная громкость E03 (экспериментально)</string>
+    <string name="settings_ecarx_audio_mode_upstream">Исходная маршрутизация</string>
+    <string name="settings_ecarx_audio_mode_e03">E03 (3 / 12)</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 с Android 9: музыка — поток 3, навигация — поток 12. При отказе маршрута выводится ошибка без перехода к маршрутизации по назначению. Музыку приглушает автомобиль. Действует со следующего подключения. Не включает перехват кнопок громкости и не меняет штатную навигацию.</string>
+    <string name="settings_ecarx_audio_fixed_routes">Следующее подключение: музыка — поток 3 / навигация — поток 12. Автомобиль сохраняет обе громкости отдельно; воспроизведение в автомобиле ещё не проверено. Режим меняется в разделе «Дополнительно». Сохранённые исходные маршруты не изменяются.</string>
+</resources>

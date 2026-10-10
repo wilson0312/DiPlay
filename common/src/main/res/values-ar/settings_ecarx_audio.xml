@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">مستوى صوت مستقل لـ E03 (تجريبي)</string>
+    <string name="settings_ecarx_audio_mode_upstream">التوجيه الأصلي</string>
+    <string name="settings_ecarx_audio_mode_e03">E03 (3 / 12)</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 بنظام Android 9: مسار الموسيقى 3 ومسار الملاحة 12. يُعرض خطأ عند رفض المسار، دون التحويل إلى التوجيه حسب الاستخدام. السيارة تتولى خفض الموسيقى. يسري عند الاتصال التالي. لا يفعّل اعتراض أزرار الصوت ولا يغيّر ملاحة المصنع.</string>
+    <string name="settings_ecarx_audio_fixed_routes">الاتصال التالي: مسار الموسيقى 3 / مسار الملاحة 12. تحفظ السيارة كل مستوى صوت على حدة؛ لم يُختبر التشغيل في السيارة بعد. غيّر الوضع من الإعدادات المتقدمة. تبقى المسارات الأصلية المحفوظة دون تغيير.</string>
+</resources>

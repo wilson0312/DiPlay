@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">E03 獨立音量（實驗性）</string>
+    <string name="settings_ecarx_audio_mode_upstream">原版路由</string>
+    <string name="settings_ecarx_audio_mode_e03">E03（3 / 12）</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 Android 9：音樂 stream 3，導航 stream 12。路由遭拒會明確報錯，不自動改用用途路由。音樂壓低交給原車系統。下次連線生效，不自動接管音量鍵，也不改變原車導航。</string>
+    <string name="settings_ecarx_audio_fixed_routes">下次連線：音樂 stream 3 / 導航 stream 12。兩組音量由原車分別儲存；實車播放效果尚未驗證。在「進階」中切換模式。已儲存的原版路由保持不變。</string>
+</resources>

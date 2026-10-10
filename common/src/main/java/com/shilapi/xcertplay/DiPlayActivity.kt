@@ -75,6 +75,8 @@ import com.shilapi.xcertplay.update.UpdateClient
 import com.shilapi.xcertplay.update.UpdateChecksums
 import com.shilapi.xcertplay.update.UpdateRelease
 import com.shilapi.xcertplay.update.UpdateVersion
+import com.shilapi.xcertplay.vehicle.ecarx.EcarxAudioMode
+import com.shilapi.xcertplay.vehicle.ecarx.EcarxAudioPreferences
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -1724,6 +1726,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         // Opt-in controls that can cost sound or video on some head units.
         filteredSection(content, SettingsSection.ADVANCED_MEDIA,
             getString(R.string.settings_advanced_media), R.drawable.ic_dp_advanced) { card ->
+            ecarxAudioControl(card)
             toggle(card, getString(R.string.efficient_video), getString(R.string.use_hevc_leave_off_for_the_widest_head_unit_compatibility), AirPlayPersistence.loadHevcEnabled(this)) { AirPlayPersistence.saveHevcEnabled(this, it); markReconnectNeeded() }
             toggle(card, getString(R.string.smooth_video), getString(R.string.smooth_video_description),
                 AirPlayPersistence.loadSmoothVideo(this)) {
@@ -1776,8 +1779,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
             getString(R.string.car_button_in_carplay), R.drawable.ic_dp_car) { card -> carButtonCard = card; carButtonControls(card) }
         filteredSection(content, SettingsSection.AUDIO_ROUTING,
             getString(R.string.audio_routing), R.drawable.ic_dp_audio) { card ->
-            mediaChannelControl(card)
-            navigationChannelControl(card)
+            audioRoutingControls(card)
             val bufferPresets = com.shilapi.xcertplay.media.MediaAudioBuffer.presets
             choice(card, getString(R.string.music_buffer), listOf(getString(R.string.s_300_ms_default), getString(R.string.s_500_ms), getString(R.string.s_1000_ms_most_stable)),
                 bufferPresets.indexOf(AirPlayPersistence.loadMediaBufferMillis(this)).coerceAtLeast(0)) {
@@ -2822,6 +2824,50 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         parent.addView(label(getString(R.string.settings_wifi_direct_band_note), 15, MUTED).apply {
             setPadding(0, 0, 0, dp(12))
         })
+    }
+
+    /** This firmware-specific opt-in lives in Advanced and applies at the next connection. */
+    private fun ecarxAudioControl(parent: LinearLayout) {
+        val mode = EcarxAudioPreferences.open(this).load()
+        val title = getString(R.string.settings_ecarx_audio_profile)
+        parent.addView(button("$title · ${ecarxAudioModeLabel(mode)}", false) {
+            showEcarxAudioModeDialog(mode)
+        }, matchButton(CONTROL_GAP_DP, CONTROL_HEIGHT_DP))
+        parent.addView(label(getString(R.string.settings_ecarx_audio_profile_hint), ECARX_AUDIO_NOTE_TEXT_SP, MUTED))
+    }
+
+    /** Cancel leaves persistence untouched; Save never drops an existing CarPlay session. */
+    private fun showEcarxAudioModeDialog(current: EcarxAudioMode) {
+        val modes = EcarxAudioMode.entries
+        var selected = current
+        appDialogBuilder().setTitle(R.string.settings_ecarx_audio_profile)
+            .setSingleChoiceItems(modes.map(::ecarxAudioModeLabel).toTypedArray(), modes.indexOf(current)) { _, index ->
+                selected = modes[index]
+            }
+            .setPositiveButton(R.string.save) { _, _ ->
+                if (selected == current) return@setPositiveButton
+                EcarxAudioPreferences.open(this).save(selected)
+                markReconnectNeeded()
+                render()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /** Labels use the same stored enum as the session, never translated values as preference keys. */
+    private fun ecarxAudioModeLabel(mode: EcarxAudioMode): String = getString(when (mode) {
+        EcarxAudioMode.UPSTREAM -> R.string.settings_ecarx_audio_mode_upstream
+        EcarxAudioMode.E03 -> R.string.settings_ecarx_audio_mode_e03
+    })
+
+    /** E03's fixed routes replace editable upstream controls, so ignored values are never displayed. */
+    private fun audioRoutingControls(parent: LinearLayout) {
+        if (EcarxAudioPreferences.open(this).load() == EcarxAudioMode.E03) {
+            parent.addView(label(getString(R.string.settings_ecarx_audio_fixed_routes), ECARX_AUDIO_NOTE_TEXT_SP, MUTED))
+            return
+        }
+        mediaChannelControl(parent)
+        navigationChannelControl(parent)
     }
 
     private fun mediaChannelControl(parent: LinearLayout) {
@@ -5594,6 +5640,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         private const val SEARCH_HIGHLIGHT_MILLIS = 900L
         private const val SPACER = "spacer"
         private const val CONTROL_HEIGHT_DP = 60
+        private const val ECARX_AUDIO_NOTE_TEXT_SP = 14
         private const val CONTROL_GAP_DP = 12
         private const val GROUP_GAP_DP = 20
         private const val NOTE_LINE_GAP_DP = 4

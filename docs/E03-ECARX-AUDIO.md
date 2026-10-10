@@ -1,6 +1,6 @@
 # E03 原车导航 / 音乐独立音量
 
-日期：2026-10-10。状态：**原车能力与两套代码路径已核查；本分支 E03 功能未实现、播放/按键验收未完成**。
+日期：2026-10-10。原车能力与两套代码路径已核查；首批音频源码状态见[实施记录](E03-ECARX-IMPLEMENTATION.md)。本车播放/按键验收未完成。
 
 ## 1. 修正结论
 
@@ -104,8 +104,8 @@ main/v0.2.16 与本分支原版基线已含 [NavigationPlayback + WheelKeyServic
 
 详见[音频验收](E03-ECARX-ACCEPTANCE.md#6-独立音量与焦点)：实际tracks分别3/12；分别调节且另一套index不动；重连/重启保持；播报中/后实体键对象正确；无双调、双duck；电话/助手/蓝牙单列。
 已确认的原车能力不用重复写成猜测，未执行的播放和键测试不记为成功。
-本次仅改文档，无 Android 功能实现或实车操作；文档及原始字节提取检查不等于Android test/lint/build通过。
-音频更正已复跑根AGENTS的完整CI命令，60秒超时；临时可写缓存中的Gradle下载DNS失败，测试/构建未开始。当前Java8与要求JDK25也尚未完成环境验证。
+此前音频更正提交仅改文档，其原始字节提取检查不等于Android test/lint/build通过。
+此前完整CI尝试因Gradle下载DNS失败而未开始测试。本批已准备工作区 JDK 25 / Gradle；最新测试、构建结果在[实施记录](E03-ECARX-IMPLEMENTATION.md)，不沿用此前的环境结论。
 
 [release]: https://github.com/carlito12345/DiPlay/releases/tag/v0.2.14
 [prefs]: https://github.com/carlito12345/DiPlay/blob/505d34a2d6995e7194d645e96bbd1a5769135b7a/common/src/main/java/com/shilapi/xcertplay/AirPlayPersistence.kt#L250-L274

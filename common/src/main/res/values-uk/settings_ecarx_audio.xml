@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">Окрема гучність E03 (експериментально)</string>
+    <string name="settings_ecarx_audio_mode_upstream">Початкова маршрутизація</string>
+    <string name="settings_ecarx_audio_mode_e03">E03 (3 / 12)</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 з Android 9: музика — потік 3, навігація — потік 12. У разі відмови маршруту показується помилка без переходу до маршрутизації за призначенням. Музику приглушує автомобіль. Діє з наступного підключення. Не вмикає перехоплення кнопок гучності й не змінює штатну навігацію.</string>
+    <string name="settings_ecarx_audio_fixed_routes">Наступне підключення: музика — потік 3 / навігація — потік 12. Автомобіль зберігає обидві гучності окремо; відтворення в автомобілі ще не перевірено. Режим змінюється в розділі «Додатково». Збережені початкові маршрути не змінюються.</string>
+</resources>

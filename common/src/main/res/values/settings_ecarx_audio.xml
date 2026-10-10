@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">E03 independent volume (experimental)</string>
+    <string name="settings_ecarx_audio_mode_upstream">Upstream routing</string>
+    <string name="settings_ecarx_audio_mode_e03">E03 (3 / 12)</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 Android 9: music stream 3 and navigation stream 12. A rejected route reports an error; it does not switch to usage routing. The car handles ducking. Takes effect at the next connection. Does not enable volume-key interception or change factory navigation.</string>
+    <string name="settings_ecarx_audio_fixed_routes">Next connection: music stream 3 / navigation stream 12. The car stores each volume separately; on-car playback is not yet verified. Change the mode in Advanced. Saved upstream routes remain unchanged.</string>
+</resources>

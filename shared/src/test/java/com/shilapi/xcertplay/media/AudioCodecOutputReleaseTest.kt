@@ -54,8 +54,8 @@ class AudioCodecOutputReleaseTest {
         val type = Class.forName("com.shilapi.xcertplay.media.AudioRenderer")
         val constructor = type.declaredConstructors.single { !it.isSynthetic }.apply { isAccessible = true }
         val arguments = mutableListOf<Any?>(
-            AudioFormat(AudioCodecKind.AAC_LC, 48_000, 2, 96, audioType), false, false, 0, 0,
-            AudioFocusCoordinator(null, false, false), 0, 500,
+            AudioFormat(AudioCodecKind.AAC_LC, 48_000, 2, 96, audioType), false, false, AudioRoutingConfig(),
+            AudioFocusCoordinator(null, AudioFocusOptions(false, false)), 0, 500,
         )
         constructor.parameterTypes.drop(arguments.size).forEach { parameter ->
             arguments.add(when (parameter) {

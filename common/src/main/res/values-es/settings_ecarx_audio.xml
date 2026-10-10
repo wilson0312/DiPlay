@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ecarx_audio_profile">Volumen independiente E03 (experimental)</string>
+    <string name="settings_ecarx_audio_mode_upstream">Enrutamiento original</string>
+    <string name="settings_ecarx_audio_mode_e03">E03 (3 / 12)</string>
+    <string name="settings_ecarx_audio_profile_hint">E03 con Android 9: flujo 3 para música y 12 para navegación. Si se rechaza la ruta, se informa del error sin cambiar al enrutamiento por uso. El coche atenúa la música. Se aplica en la próxima conexión. No activa la captura de teclas de volumen ni cambia la navegación de fábrica.</string>
+    <string name="settings_ecarx_audio_fixed_routes">Próxima conexión: música en el flujo 3 / navegación en el flujo 12. El coche guarda cada volumen por separado; la reproducción en el coche aún no se ha verificado. Cambia el modo en Avanzado. Las rutas originales guardadas no cambian.</string>
+</resources>

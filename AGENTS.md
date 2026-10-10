@@ -7,7 +7,7 @@ Instructions for coding agents that work on DiPlay.
 Run the CI command from `.github/workflows/android.yml` before you report a change as done:
 
 ```sh
-./gradlew :shared:testDebugUnitTest :common:testDebugUnitTest :home:testDebugUnitTest \
+./gradlew :shared:testDebugUnitTest :vehicle-ecarx:testDebugUnitTest :common:testDebugUnitTest :home:testDebugUnitTest \
   :mobile:lintDebug :home:lintDebug :maphost:lintDebug \
   :mobile:assembleDebug :home:assembleDebug :maphost:assembleDebug
 ```

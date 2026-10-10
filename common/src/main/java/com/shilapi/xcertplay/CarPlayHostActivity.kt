@@ -4572,6 +4572,7 @@ class CarPlayHostActivity : ComponentActivity() {
     ): AndroidMediaSink {
         // Capture this session's log: late decoder shutdown must not write into a new session.
         val diagnosticLog = sessionLog
+        val audioRouting = vehicleAudioRouting()
         return AndroidMediaSink(
             surface = null,
             videoWidth = videoWidth,
@@ -4580,10 +4581,8 @@ class CarPlayHostActivity : ComponentActivity() {
             advancedAudioChannelMapping = advancedAudioChannelMapping,
             audioFocusEnabled = AirPlayPersistence.loadAudioFocusEnabled(this),
             audioFocusAutoYield = AirPlayPersistence.loadAudioFocusAutoYield(this),
-            mediaChannel = AirPlayPersistence.loadMediaAudioChannel(this),
-            navigationChannel = AirPlayPersistence.loadNavigationAudioChannel(this),
             context = this,
-            navigationStreamType = navigationStreamType,
+            navigationStreamType = audioRouting.navigationStreamType.takeIf { it != 0 } ?: navigationStreamType,
             onScreenStreamActiveChanged = { type, active ->
                 onScreenStreamStateChanged(controllerGeneration, type, active)
             },
@@ -4602,8 +4601,18 @@ class CarPlayHostActivity : ComponentActivity() {
             videoPacingDelayMillis = if (smoothVideo) smoothVideoDelayMillis(fps) else 0,
             mainVideoFrameRate = fps,
             vendorLowLatencyDecoder = AirPlayPersistence.loadLowLatencyDecoder(this),
+            audioRoutingConfig = audioRouting,
         )
     }
+
+    /** Captures the explicit vehicle mode without overwriting the user's upstream stream choices. */
+    private fun vehicleAudioRouting(): com.shilapi.xcertplay.media.AudioRoutingConfig =
+        com.shilapi.xcertplay.vehicle.ecarx.EcarxAudioPreferences.open(this).load().routing(
+            com.shilapi.xcertplay.media.AudioRoutingConfig(
+                mediaStreamType = AirPlayPersistence.loadMediaAudioChannel(this),
+                navigationStreamType = AirPlayPersistence.loadNavigationAudioChannel(this),
+            ),
+        )
 
     private fun createMediaEngine(sink: AndroidMediaSink): CarPlayMediaEngine =
         CarPlayMediaEngine(
